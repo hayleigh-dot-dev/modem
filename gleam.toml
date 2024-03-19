@@ -1,0 +1,19 @@
+name = "modem"
+version = "1.0.0"
+
+description = "A friendly Lustre package to help you build a router, handle links, and manage URLs."
+repository = { type = "github", user = "hayleigh-dot-dev", repo = "modem" }
+licences = ["MIT"]
+
+links = [
+  { title = "Lustre", href = "https://hexdocs.pm/lustre/" },
+  { title = "Sponsor", href = "https://github.com/sponsors/hayleigh-dot-dev" },
+]
+
+
+[dependencies]
+gleam_stdlib = "~> 0.34 or ~> 1.0"
+lustre = "~> 3.0 or ~> 4.0 or 4.0.0-rc.2"
+
+[dev-dependencies]
+gleeunit = "~> 1.0"

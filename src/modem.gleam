@@ -1,10 +1,11 @@
 //// > **modem**: a device that converts signals produced by one type of device
 //// > (such as a computer) to a form compatible with another (such as a
-//// > telephone). - [Merriam-Webster](https://www.merriam-webster.com/dictionary/modem)
+//// > telephone) –  [Merriam-Webster](https://www.merriam-webster.com/dictionary/modem)
 ////
-//// Modem is a little library for Lustre that helps you manage navigation and
-//// URLs in the browser. It converts url requests into messages that you can
-//// handle in your app's update function.
+//// Modem is a little library for Lustre that helps you manage navigation and URLs
+//// in the browser. It converts url requests into messages that you can handle
+//// in your app's update function. Modem isn't a router, but it can help you
+//// build one!
 ////
 
 // IMPORTS ---------------------------------------------------------------------

@@ -126,7 +126,7 @@ const uri_from_url = (url) => {
     /* host     */ new (url.host ? Some : None)(url.host),
     /* port     */ new (url.port ? Some : None)(url.port),
     /* path     */ url.pathname,
-    /* query    */ new (url.search ? Some : None)(url.search),
+    /* query    */ new (url.search ? Some : None)(url.search.slice(1)),
     /* fragment */ new (url.hash ? Some : None)(url.hash.slice(1)),
   );
 };

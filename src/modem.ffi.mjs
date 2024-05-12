@@ -1,3 +1,4 @@
+import { Ok, Error } from "./gleam.mjs";
 import { Some, None } from "../gleam_stdlib/gleam/option.mjs";
 import { Uri, to_string } from "../gleam_stdlib/gleam/uri.mjs";
 
@@ -8,7 +9,17 @@ const defaults = {
   handle_internal_links: true,
 };
 
+const initial_location = window?.location?.href;
+
 // EXPORTS ---------------------------------------------------------------------
+
+export const do_initial_uri = () => {
+  if (!initial_location) {
+    return new Error(undefined);
+  } else {
+    return new Ok(uri_from_url(new URL(initial_location)));
+  }
+};
 
 export const do_init = (dispatch, options = defaults) => {
   document.body.addEventListener("click", (event) => {
@@ -121,12 +132,12 @@ const find_anchor = (el) => {
 
 const uri_from_url = (url) => {
   return new Uri(
-    /* scheme   */ new (url.protocol ? Some : None)(url.protocol),
+    /* scheme   */ url.protocol ? new Some(url.protocol) : new None(),
     /* userinfo */ new None(),
-    /* host     */ new (url.host ? Some : None)(url.host),
-    /* port     */ new (url.port ? Some : None)(url.port),
+    /* host     */ url.host ? new Some(url.host) : new None(),
+    /* port     */ url.port ? new Some(Number(url.port)) : new None(),
     /* path     */ url.pathname,
-    /* query    */ new (url.search ? Some : None)(url.search.slice(1)),
-    /* fragment */ new (url.hash ? Some : None)(url.hash.slice(1)),
+    /* query    */ url.search ? new Some(url.search.slice(1)) : new None(),
+    /* fragment */ url.hash ? new Some(url.hash.slice(1)) : new None(),
   );
 };

@@ -7,10 +7,13 @@
 //// in your app's update function. Modem isn't a router, but it can help you
 //// build one!
 ////
+////
 
 // IMPORTS ---------------------------------------------------------------------
 
+import gleam/bool
 import gleam/uri.{type Uri}
+import lustre
 import lustre/effect.{type Effect}
 
 // TYPES -----------------------------------------------------------------------
@@ -34,13 +37,36 @@ pub type Options {
   )
 }
 
+// QUERIES ---------------------------------------------------------------------
+
+/// Get the `Uri` of the page when it first loaded. This can be useful to read
+/// in your own app's `init` function so you can choose the correct initial
+/// route for your app.
+///
+/// To subscribe to changes in the uri when a user navigates around your app, see
+/// the [`init`](#init) and [`advanced`](#advanced) functions.
+///
+/// > **Note**: this function is only meaningful when run in the browser. When
+/// > run in a backend JavaScript environment or in Erlang this function will
+/// > always fail.
+///
+@external(javascript, "./modem.ffi.mjs", "do_initial_uri")
+pub fn initial_uri() -> Result(Uri, Nil) {
+  Error(Nil)
+}
+
 // EFFECTS ---------------------------------------------------------------------
 
 /// Initialise a simple modem that intercepts internal links and sends them to
 /// your update function through the provided handler.
 ///
+/// > **Note**: this effect is only meaningful in the browser. When executed in
+/// > a backend JavaScript environment or in Erlang this effect will always be
+/// > equivalent to `effect.none()`
+///
 pub fn init(handler: fn(Uri) -> msg) -> Effect(msg) {
   use dispatch <- effect.from
+  use <- bool.guard(!lustre.is_browser(), Nil)
   use uri <- do_init
 
   uri
@@ -57,8 +83,13 @@ fn do_init(_handler: fn(Uri) -> Nil) -> Nil {
 /// intercept. Take a look at the [`Options`](#options) type for info on what
 /// can be configured.
 ///
+/// > **Note**: this effect is only meaningful in the browser. When executed in
+/// > a backend JavaScript environment or in Erlang this effect will always be
+/// > equivalent to `effect.none()`
+///
 pub fn advanced(options: Options, handler: fn(Uri) -> msg) -> Effect(msg) {
   use dispatch <- effect.from
+  use <- bool.guard(!lustre.is_browser(), Nil)
   use uri <- do_advanced(_, options)
 
   uri
@@ -78,8 +109,14 @@ fn do_advanced(_handler: fn(Uri) -> Nil, _options: Options) -> Nil {
 /// **Note**: if you push a new uri while the user has navigated using the back
 /// or forward buttons, you will clear any forward history in the stack!
 ///
+/// > **Note**: this effect is only meaningful in the browser. When executed in
+/// > a backend JavaScript environment or in Erlang this effect will always be
+/// > equivalent to `effect.none()`
+///
 pub fn push(uri: Uri) -> Effect(msg) {
   use _ <- effect.from
+  use <- bool.guard(!lustre.is_browser(), Nil)
+
   do_push(uri)
 }
 
@@ -88,12 +125,17 @@ fn do_push(_uri: Uri) -> Nil {
   Nil
 }
 
+//
 /// Replace the current uri in the browser's history stack. If the uri has the
 /// same domain and port as the current page, or the uri is relative, this will
 /// not trigger a full page reload.
-///
+/// > **Note**: this effect is only meaningful in the browser. When executed in
+/// > a backend JavaScript environment or in Erlang this effect will always be
+/// > equivalent to `effect.none()`
 pub fn replace(uri: Uri) -> Effect(msg) {
   use _ <- effect.from
+  use <- bool.guard(!lustre.is_browser(), Nil)
+
   do_replace(uri)
 }
 
@@ -108,8 +150,14 @@ fn do_replace(_uri: Uri) -> Nil {
 /// **Note**: if you load a new uri while the user has navigated using the back
 /// or forward buttons, you will clear any forward history in the stack!
 ///
+/// > **Note**: this effect is only meaningful in the browser. When executed in
+/// > a backend JavaScript environment or in Erlang this effect will always be
+/// > equivalent to `effect.none()`
+///
 pub fn load(uri: Uri) -> Effect(msg) {
   use _ <- effect.from
+  use <- bool.guard(!lustre.is_browser(), Nil)
+
   do_load(uri)
 }
 
@@ -126,8 +174,14 @@ fn do_load(_uri: Uri) -> Nil {
 /// **Note**: you can go _too far forward_ and end up navigating the user off your
 /// app if you're not careful.
 ///
+/// > **Note**: this effect is only meaningful in the browser. When executed in
+/// > a backend JavaScript environment or in Erlang this effect will always be
+/// > equivalent to `effect.none()`
+///
 pub fn forward(steps: Int) -> Effect(msg) {
   use _ <- effect.from
+  use <- bool.guard(!lustre.is_browser(), Nil)
+
   do_forward(steps)
 }
 
@@ -146,8 +200,15 @@ fn do_forward(_steps: Int) -> Nil {
 ///
 /// **Note**: you can go _too far back_ and end up navigating the user off your
 /// app if you're not careful.
+///
+/// > **Note**: this effect is only meaningful in the browser. When executed in
+/// > a backend JavaScript environment or in Erlang this effect will always be
+/// > equivalent to `effect.none()`
+///
 pub fn back(steps: Int) -> Effect(msg) {
   use _ <- effect.from
+  use <- bool.guard(!lustre.is_browser(), Nil)
+
   do_back(steps)
 }
 

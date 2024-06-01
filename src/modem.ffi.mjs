@@ -134,7 +134,7 @@ const uri_from_url = (url) => {
   return new Uri(
     /* scheme   */ url.protocol ? new Some(url.protocol) : new None(),
     /* userinfo */ new None(),
-    /* host     */ url.host ? new Some(url.host) : new None(),
+    /* host     */ url.hostname ? new Some(url.hostname) : new None(),
     /* port     */ url.port ? new Some(Number(url.port)) : new None(),
     /* path     */ url.pathname,
     /* query    */ url.search ? new Some(url.search.slice(1)) : new None(),

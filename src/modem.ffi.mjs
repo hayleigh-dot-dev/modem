@@ -70,6 +70,14 @@ export const do_init = (dispatch, options = defaults) => {
 
     dispatch(uri);
   });
+
+  window.addEventListener("modem-push", ({ detail }) => {
+    dispatch(detail);
+  });
+
+  window.addEventListener("modem-replace", ({ detail }) => {
+    dispatch(detail);
+  });
 };
 
 export const do_push = (uri) => {
@@ -79,6 +87,8 @@ export const do_push = (uri) => {
       document.getElementById(uri.fragment[0])?.scrollIntoView();
     }
   });
+
+  window.dispatchEvent(new CustomEvent("modem-push", { detail: uri }));
 };
 
 export const do_replace = (uri) => {
@@ -88,6 +98,8 @@ export const do_replace = (uri) => {
       document.getElementById(uri.fragment[0])?.scrollIntoView();
     }
   });
+
+  window.dispatchEvent(new CustomEvent("modem-replace", { detail: uri }));
 };
 
 export const do_load = (uri) => {

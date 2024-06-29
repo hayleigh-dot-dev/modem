@@ -12,9 +12,22 @@
 // IMPORTS ---------------------------------------------------------------------
 
 import gleam/bool
-import gleam/uri.{type Uri}
+import gleam/option.{type Option, None}
+import gleam/uri.{type Uri, Uri}
 import lustre
 import lustre/effect.{type Effect}
+
+// CONSTANTS -------------------------------------------------------------------
+
+const relative: Uri = Uri(
+  scheme: None,
+  userinfo: None,
+  host: None,
+  port: None,
+  path: "",
+  query: None,
+  fragment: None,
+)
 
 // TYPES -----------------------------------------------------------------------
 
@@ -102,9 +115,8 @@ fn do_advanced(_handler: fn(Uri) -> Nil, _options: Options) -> Nil {
   Nil
 }
 
-/// Push a new uri to the browser's history stack. If the uri has the same domain
-/// and port as the current page, or the uri is relative, this will not trigger
-/// a full page reload.
+/// Push a new relative route onto the browser's history stack. This will not
+/// trigger a full page reload.
 ///
 /// **Note**: if you push a new uri while the user has navigated using the back
 /// or forward buttons, you will clear any forward history in the stack!
@@ -113,11 +125,15 @@ fn do_advanced(_handler: fn(Uri) -> Nil, _options: Options) -> Nil {
 /// > a backend JavaScript environment or in Erlang this effect will always be
 /// > equivalent to `effect.none()`
 ///
-pub fn push(uri: Uri) -> Effect(msg) {
+pub fn push(
+  path: String,
+  query: Option(String),
+  fragment: Option(String),
+) -> Effect(msg) {
   use _ <- effect.from
   use <- bool.guard(!lustre.is_browser(), Nil)
 
-  do_push(uri)
+  do_push(Uri(..relative, path: path, query: query, fragment: fragment))
 }
 
 @external(javascript, "./modem.ffi.mjs", "do_push")
@@ -125,18 +141,22 @@ fn do_push(_uri: Uri) -> Nil {
   Nil
 }
 
-//
-/// Replace the current uri in the browser's history stack. If the uri has the
-/// same domain and port as the current page, or the uri is relative, this will
-/// not trigger a full page reload.
+/// Replace the current uri in the browser's history stack with a new relative
+/// route. This will not trigger a full page reload.
+///
 /// > **Note**: this effect is only meaningful in the browser. When executed in
 /// > a backend JavaScript environment or in Erlang this effect will always be
 /// > equivalent to `effect.none()`
-pub fn replace(uri: Uri) -> Effect(msg) {
+///
+pub fn replace(
+  path: String,
+  query: Option(String),
+  fragment: Option(String),
+) -> Effect(msg) {
   use _ <- effect.from
   use <- bool.guard(!lustre.is_browser(), Nil)
 
-  do_replace(uri)
+  do_replace(Uri(..relative, path: path, query: query, fragment: fragment))
 }
 
 @external(javascript, "./modem.ffi.mjs", "do_replace")

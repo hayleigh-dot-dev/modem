@@ -144,7 +144,7 @@ const find_anchor = (el) => {
 
 const uri_from_url = (url) => {
   return new Uri(
-    /* scheme   */ url.protocol ? new Some(url.protocol) : new None(),
+    /* scheme   */ url.protocol ? new Some(url.protocol.slice(0, -1)) : new None(),
     /* userinfo */ new None(),
     /* host     */ url.hostname ? new Some(url.hostname) : new None(),
     /* port     */ url.port ? new Some(Number(url.port)) : new None(),

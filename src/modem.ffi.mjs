@@ -133,7 +133,7 @@ export const do_back = (steps) => {
 // UTILS -----------------------------------------------------------------------
 
 const find_anchor = (el) => {
-  if (el.tagName === "BODY") {
+  if (!el || el.tagName === "BODY") {
     return null;
   } else if (el.tagName === "A") {
     return el;
@@ -144,7 +144,9 @@ const find_anchor = (el) => {
 
 const uri_from_url = (url) => {
   return new Uri(
-    /* scheme   */ url.protocol ? new Some(url.protocol.slice(0, -1)) : new None(),
+    /* scheme   */ url.protocol
+      ? new Some(url.protocol.slice(0, -1))
+      : new None(),
     /* userinfo */ new None(),
     /* host     */ url.hostname ? new Some(url.hostname) : new None(),
     /* port     */ url.port ? new Some(Number(url.port)) : new None(),

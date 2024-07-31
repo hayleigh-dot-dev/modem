@@ -22,7 +22,7 @@ export const do_initial_uri = () => {
 };
 
 export const do_init = (dispatch, options = defaults) => {
-  document.body.addEventListener("click", (event) => {
+  document.addEventListener("click", (event) => {
     const a = find_anchor(event.target);
 
     if (!a) return;

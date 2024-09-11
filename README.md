@@ -30,7 +30,8 @@ import lustre/effect.{type Effect}
 import modem
 
 pub fn main() {
-  lustre.application(init, update, view)
+  let app = lustre.application(init, update, view)
+  let assert Ok(_) = lustre.start(app, "#app", Nil)
 }
 
 pub type Route {

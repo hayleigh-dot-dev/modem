@@ -9,7 +9,7 @@ const defaults = {
   handle_internal_links: true,
 };
 
-const initial_location = window?.location?.href;
+const initial_location = globalThis?.window?.location?.href;
 
 // EXPORTS ---------------------------------------------------------------------
 

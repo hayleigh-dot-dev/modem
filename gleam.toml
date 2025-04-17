@@ -1,5 +1,5 @@
 name = "modem"
-version = "2.0.1"
+version = "2.0.2"
 
 description = "A friendly Lustre package to help you handle routing, links, and manage URLs."
 repository = { type = "github", user = "hayleigh-dot-dev", repo = "modem" }

@@ -21,6 +21,7 @@ gleam add lustre modem
 ```
 
 ```gleam
+import gleam/result
 import gleam/uri.{type Uri}
 import lustre
 import lustre/attribute
@@ -39,8 +40,19 @@ pub type Route {
   Wobble
 }
 
-fn init(_) -> #(Route, Effect(Msg)) {
-  #(Wibble, modem.init(on_url_change))
+pub fn init(_) -> #(Route, Effect(Msg)) {
+  let route =
+    modem.initial_uri()
+    |> result.map(fn(uri) { uri.path_segments(uri.path) })
+    |> fn(path) {
+      case path {
+        Ok(["wibble"]) -> Wibble
+        Ok(["wobble"]) -> Wobble
+        _ -> Wibble
+      }
+    }
+
+  #(route, modem.init(on_url_change))
 }
 
 fn on_url_change(uri: Uri) -> Msg {

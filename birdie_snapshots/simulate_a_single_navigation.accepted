@@ -1,0 +1,9 @@
+---
+version: 1.3.0
+title: Simulate a single navigation
+file: ./test/simulations/simulate_navigation_test.gleam
+test_name: simulate_single_navigation_test
+---
+<h1>
+  You&#39;re on wobble
+</h1>

@@ -2,10 +2,7 @@
 
 import apps/example
 import birdie
-import gleam/function
 import gleam/string
-import gleeunit
-import gleeunit/should
 import lustre/dev/query
 import lustre/dev/simulate
 import lustre/element

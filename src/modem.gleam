@@ -12,10 +12,16 @@
 // IMPORTS ---------------------------------------------------------------------
 
 import gleam/bool
+import gleam/list
 import gleam/option.{type Option, None}
+import gleam/result
 import gleam/uri.{type Uri, Uri}
 import lustre
+import lustre/dev/query.{type Query}
+import lustre/dev/simulate.{type Simulation} as lustre_simulate
 import lustre/effect.{type Effect}
+import lustre/vdom/vattr.{Attribute}
+import lustre/vdom/vnode.{Element}
 
 // CONSTANTS -------------------------------------------------------------------
 
@@ -235,4 +241,127 @@ pub fn back(steps: Int) -> Effect(msg) {
 @external(javascript, "./modem.ffi.mjs", "do_back")
 fn do_back(_steps: Int) -> Nil {
   Nil
+}
+
+//
+
+/// Simulate a click on a link in the browser that would trigger a navigation.
+/// This will dispatch a message to the simulated application if the link's `href`
+/// is valid and would cause an internal navigation.
+///
+/// The base URL is necessary to resolve relative links. It should be a full
+/// complete URL, typically the one you would use for the live version of your app.
+/// For example:
+///
+/// - `https://lustre.build`
+///
+/// - `http://localhost:1234`
+///
+/// - `https://gleam.run/news`
+///
+/// Modem can simulate links that are relative to that base URL such as `./wibble`,
+/// absolute paths like `/wobble`, or full URLs **as long as their origin matches
+/// the base URL**.
+///
+/// External links will log a problem in the simulation's history. Links with an
+/// empty `href` attribute will be ignored.
+///
+pub fn simulate(
+  simulation: Simulation(model, msg),
+  link query: Query,
+  base route: String,
+  on_url_change handler: fn(Uri) -> msg,
+) -> Simulation(model, msg) {
+  result.unwrap_both({
+    use base <- result.try(result.replace_error(
+      uri.parse(route),
+      lustre_simulate.problem(
+        simulation,
+        "ModemInvalidBaseURL",
+        "`" <> route <> "` is not a valid base URL",
+      ),
+    ))
+
+    use origin <- result.try(result.replace_error(
+      uri.origin(base),
+      lustre_simulate.problem(
+        simulation,
+        "ModemInvalidBaseURL",
+        "`" <> route <> "` is not a valid base URL",
+      ),
+    ))
+
+    // The following is a sequence of crimes that should *never* be performed in
+    // a real application. Introspecting the vdom is not supported by Lustre and
+    // is liable to break at any time: relying on internals exempts you from semver!
+    //
+    // If you need to do this for some reason, please open an issue on the Lustre
+    // repo so we can learn about your user case:
+    //
+    //   https://github.com/lustre-labs/lustre/issues/new
+    //
+    use target <- result.try(result.replace_error(
+      query.find(in: lustre_simulate.view(simulation), matching: query),
+      lustre_simulate.problem(
+        simulation,
+        name: "EventTargetNotFound",
+        message: "No element matching " <> query.to_readable_string(query),
+      ),
+    ))
+
+    use attributes <- result.try(case target {
+      Element(tag: "a", attributes:, ..) -> Ok(attributes)
+      _ ->
+        Error(lustre_simulate.problem(
+          simulation,
+          name: "ModemInvalidTarget",
+          message: "Target must be an <a> tag",
+        ))
+    })
+
+    use href <- result.try(result.replace_error(
+      list.find_map(attributes, fn(attribute) {
+        case attribute {
+          Attribute(name: "href", value:, ..) -> Ok(value)
+          _ -> Error(Nil)
+        }
+      }),
+      lustre_simulate.problem(
+        simulation,
+        name: "ModemMissingHref",
+        message: "Target must have an `href` attribute",
+      ),
+    ))
+
+    use relative <- result.try(result.replace_error(
+      uri.parse(href),
+      lustre_simulate.problem(
+        simulation,
+        name: "ModemInvalidHref",
+        message: "`" <> href <> "` is not a valid URL",
+      ),
+    ))
+
+    use _ <- result.try(case uri.origin(relative) {
+      Ok(relative_origin) if origin != relative_origin ->
+        Error(lustre_simulate.problem(
+          simulation,
+          name: "ModemExternalUrl",
+          message: "`" <> href <> "` is an external URL and cannot be simulated",
+        ))
+
+      _ -> Ok(Nil)
+    })
+
+    use resolved <- result.try(result.replace_error(
+      uri.merge(base, relative),
+      lustre_simulate.problem(
+        simulation,
+        name: "ModemInvalidBaseURL",
+        message: "`" <> route <> "` is not a valid base URL",
+      ),
+    ))
+
+    Ok(lustre_simulate.message(simulation, handler(resolved)))
+  })
 }

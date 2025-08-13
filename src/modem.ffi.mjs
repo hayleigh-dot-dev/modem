@@ -46,6 +46,9 @@ export const do_init = (dispatch, options = defaults) => {
           // element if a
           if (url.hash) {
             document.getElementById(url.hash.slice(1))?.scrollIntoView();
+          } else {
+            // If no hash is present, scroll to the top of the page
+            window.scrollTo(0, 0);
           }
         });
       }
@@ -65,6 +68,9 @@ export const do_init = (dispatch, options = defaults) => {
     window.requestAnimationFrame(() => {
       if (url.hash) {
         document.getElementById(url.hash.slice(1))?.scrollIntoView();
+      } else {
+        // If no hash is present, scroll to the top of the page
+        window.scrollTo(0, 0);
       }
     });
 

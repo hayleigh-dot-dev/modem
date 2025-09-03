@@ -30,7 +30,7 @@ export const do_init = (dispatch, options = defaults) => {
     try {
       const url = new URL(a.href);
       const uri = uri_from_url(url);
-      const is_external = url.host !== window.location.host;
+      const is_external = url.host !== window.location.host || a.target === "_blank";
 
       if (!options.handle_external_links && is_external) return;
       if (!options.handle_internal_links && !is_external) return;

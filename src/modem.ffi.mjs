@@ -87,7 +87,7 @@ export const do_init = (dispatch, options = defaults) => {
 };
 
 export const do_push = (uri) => {
-  window.history.pushState({}, "", to_string(uri));
+  window.history.pushState({}, "", trim_url_separators(to_string(uri)));
   window.requestAnimationFrame(() => {
     if (uri.fragment[0]) {
       document.getElementById(uri.fragment[0])?.scrollIntoView();
@@ -98,7 +98,7 @@ export const do_push = (uri) => {
 };
 
 export const do_replace = (uri) => {
-  window.history.replaceState({}, "", to_string(uri));
+  window.history.replaceState({}, "", trim_url_separators(to_string(uri)));
   window.requestAnimationFrame(() => {
     if (uri.fragment[0]) {
       document.getElementById(uri.fragment[0])?.scrollIntoView();
@@ -109,7 +109,7 @@ export const do_replace = (uri) => {
 };
 
 export const do_load = (uri) => {
-  window.location = to_string(uri);
+  window.location = trim_url_separators(to_string(uri));
 };
 
 export const do_forward = (steps) => {
@@ -161,3 +161,18 @@ const uri_from_url = (url) => {
     /* fragment */ url.hash ? new Some(url.hash.slice(1)) : new None(),
   );
 };
+
+
+/**
+* Strip redundant trailing separators like '?', '#'.
+*
+* trim_url_separators('http://localhost/path?') -> 'http://localhost/path'
+* trim_url_separators('http://localhost/path#') -> 'http://localhost/path'
+* trim_url_separators('http://localhost/path?#') -> 'http://localhost/path'
+*/
+const trim_url_separators = (url) => {
+  if (!url.endsWith("?") && !url.endsWith("#")) {
+    return url
+  }
+  return trim_url_separators(url.slice(0, -1))
+}

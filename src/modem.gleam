@@ -39,19 +39,20 @@ const relative: Uri = Uri(
 
 pub type Options {
   Options(
-    /// Enable this option if you'd like to trigger your url change handler when
+    /// This option controls if you'd like to trigger your url change handler when
     /// a link to the same domain is clicked. When enabled, internal links will
     /// _always_ update the url shown in the browser's address bar but they _won't_
-    /// trigger a page load.
+    /// trigger a page load. Default is `True`.
     ///
     handle_internal_links: Bool,
-    /// Enable this option if you'd like to trigger your url change handler even
+    /// This option controls if you'd like to trigger your url change handler even
     /// when the link is to some external domain. You might want to do this for
     /// example to save some state in your app before the user navigates away.
     ///
     /// You will need to manually call [`load`](#load) to actually navigate to
     /// the external link!
     ///
+    /// Default is `False`.
     handle_external_links: Bool,
   )
 }

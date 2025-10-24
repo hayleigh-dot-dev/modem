@@ -42,7 +42,7 @@ pub type Options {
     /// This option controls if you'd like to trigger your url change handler when
     /// a link to the same domain is clicked. When enabled, internal links will
     /// _always_ update the url shown in the browser's address bar but they _won't_
-    /// trigger a page load. Default is `True`.
+    /// trigger a page load. The `init` function enables this option when invoked.
     ///
     handle_internal_links: Bool,
     /// This option controls if you'd like to trigger your url change handler even
@@ -51,8 +51,6 @@ pub type Options {
     ///
     /// You will need to manually call [`load`](#load) to actually navigate to
     /// the external link!
-    ///
-    /// Default is `False`.
     handle_external_links: Bool,
   )
 }

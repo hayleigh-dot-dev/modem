@@ -51,6 +51,7 @@ pub type Options {
     ///
     /// You will need to manually call [`load`](#load) to actually navigate to
     /// the external link!
+    ///
     handle_external_links: Bool,
   )
 }

@@ -13,7 +13,7 @@
 
 import gleam/bool
 import gleam/list
-import gleam/option.{type Option, None}
+import gleam/option.{type Option, None, Some}
 import gleam/result
 import gleam/uri.{type Uri, Uri}
 import lustre
@@ -79,6 +79,10 @@ pub fn initial_uri() -> Result(Uri, Nil) {
 /// Initialise a simple modem that intercepts internal links and sends them to
 /// your update function through the provided handler.
 ///
+/// > **Note**: internal links are any links on the same origin as your app. If
+/// > you need to navigate users somewhere else on the same origin you can use
+/// > the [`load`](#load) effect.
+///
 /// > **Note**: this effect is only meaningful in the browser. When executed in
 /// > a backend JavaScript environment or in Erlang this effect will always be
 /// > equivalent to `effect.none()`
@@ -139,7 +143,14 @@ pub fn push(
   use _ <- effect.from
   use <- bool.guard(!lustre.is_browser(), Nil)
 
-  do_push(Uri(..relative, path: path, query: query, fragment: fragment))
+  do_push(
+    Uri(
+      ..relative,
+      path: path,
+      query: option.then(query, non_empty),
+      fragment: option.then(fragment, non_empty),
+    ),
+  )
 }
 
 @external(javascript, "./modem.ffi.mjs", "do_push")
@@ -162,7 +173,14 @@ pub fn replace(
   use _ <- effect.from
   use <- bool.guard(!lustre.is_browser(), Nil)
 
-  do_replace(Uri(..relative, path: path, query: query, fragment: fragment))
+  do_replace(
+    Uri(
+      ..relative,
+      path: path,
+      query: option.then(query, non_empty),
+      fragment: option.then(fragment, non_empty),
+    ),
+  )
 }
 
 @external(javascript, "./modem.ffi.mjs", "do_replace")
@@ -364,4 +382,11 @@ pub fn simulate(
 
     Ok(lustre_simulate.message(simulation, handler(resolved)))
   })
+}
+
+fn non_empty(string: String) -> Option(String) {
+  case string {
+    "" -> None
+    _ -> Some(string)
+  }
 }

@@ -1,5 +1,5 @@
 name = "modem"
-version = "2.1.1"
+version = "2.1.2"
 
 description = "A friendly Lustre package to help you handle routing, links, and manage URLs."
 repository = { type = "github", user = "hayleigh-dot-dev", repo = "modem" }
@@ -9,7 +9,6 @@ links = [
     { title = "Lustre", href = "https://hexdocs.pm/lustre/" },
     { title = "Sponsor", href = "https://github.com/sponsors/hayleigh-dot-dev" },
 ]
-
 
 [dependencies]
 gleam_stdlib = ">= 0.60.0 and < 2.0.0"

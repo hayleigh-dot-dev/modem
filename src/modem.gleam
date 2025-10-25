@@ -290,7 +290,7 @@ pub fn simulate(
   base route: String,
   on_url_change handler: fn(Uri) -> msg,
 ) -> Simulation(model, msg) {
-  result.unwrap_both({
+  let result = {
     use base <- result.try(result.replace_error(
       uri.parse(route),
       lustre_simulate.problem(
@@ -381,7 +381,12 @@ pub fn simulate(
     ))
 
     Ok(lustre_simulate.message(simulation, handler(resolved)))
-  })
+  }
+
+  case result {
+    Ok(simulation) -> simulation
+    Error(problem) -> problem
+  }
 }
 
 fn non_empty(string: String) -> Option(String) {

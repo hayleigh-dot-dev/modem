@@ -35,6 +35,9 @@ export const do_init = (dispatch, options = defaults) => {
       if (!options.handle_external_links && is_external) return;
       if (!options.handle_internal_links && !is_external) return;
 
+      // Allow browser to handle modifier+clicks natively (new tab, new window, etc.)
+      if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+
       event.preventDefault();
 
       if (!is_external) {

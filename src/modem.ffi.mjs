@@ -26,37 +26,35 @@ export const do_init = (dispatch, options = defaults) => {
     const a = find_anchor(event.target);
 
     if (!a) return;
+    if (!URL.canParse(a.href)) return;
 
-    try {
-      const url = new URL(a.href);
-      const uri = uri_from_url(url);
-      const is_external = url.host !== window.location.host || a.target === "_blank";
+    const url = new URL(a.href);
+    const uri = uri_from_url(url);
+    const is_external =
+      url.host !== window.location.host || a.target === "_blank";
 
-      if (!options.handle_external_links && is_external) return;
-      if (!options.handle_internal_links && !is_external) return;
+    if (!options.handle_external_links && is_external) return;
+    if (!options.handle_internal_links && !is_external) return;
 
-      event.preventDefault();
+    event.preventDefault();
 
-      if (!is_external) {
-        window.history.pushState({}, "", a.href);
-        window.requestAnimationFrame(() => {
-          // The browser automatically attempts to scroll to an element with a matching
-          // id if a hash is present in the URL. Because we need to `preventDefault`
-          // the event to prevent navigation, we also need to manually scroll to the
-          // element if a
-          if (url.hash) {
-            document.getElementById(url.hash.slice(1))?.scrollIntoView();
-          } else {
-            // If no hash is present, scroll to the top of the page
-            window.scrollTo(0, 0);
-          }
-        });
-      }
-
-      return dispatch(uri);
-    } catch {
-      return;
+    if (!is_external) {
+      window.history.pushState({}, "", a.href);
+      window.requestAnimationFrame(() => {
+        // The browser automatically attempts to scroll to an element with a matching
+        // id if a hash is present in the URL. Because we need to `preventDefault`
+        // the event to prevent navigation, we also need to manually scroll to the
+        // element if a
+        if (url.hash) {
+          document.getElementById(url.hash.slice(1))?.scrollIntoView();
+        } else {
+          // If no hash is present, scroll to the top of the page
+          window.scrollTo(0, 0);
+        }
+      });
     }
+
+    return dispatch(uri);
   });
 
   window.addEventListener("popstate", (e) => {

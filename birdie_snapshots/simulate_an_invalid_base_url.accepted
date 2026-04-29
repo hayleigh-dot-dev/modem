@@ -4,4 +4,4 @@ title: Simulate an invalid base URL
 file: ./test/simulations/simulate_navigation_test.gleam
 test_name: simulate_invalid_base_url_test
 ---
-[Problem(name: "ModemInvalidBaseURL", message: "`invalid-url` is not a valid base URL")]
+[Problem("ModemInvalidBaseURL", "`invalid-url` is not a valid base URL")]

@@ -7,6 +7,7 @@ import { Uri, to_string } from "../gleam_stdlib/gleam/uri.mjs";
 const defaults = {
   handle_external_links: false,
   handle_internal_links: true,
+  handle_modified_clicks: false,
 };
 
 const initial_location = globalThis?.window?.location?.href;
@@ -32,9 +33,12 @@ export const do_init = (dispatch, options = defaults) => {
     const uri = uri_from_url(url);
     const is_external =
       url.host !== window.location.host || a.target === "_blank";
+    const is_modified_click =
+      event.ctrlKey || event.metaKey || event.shiftKey || event.altKey;
 
     if (!options.handle_external_links && is_external) return;
     if (!options.handle_internal_links && !is_external) return;
+    if (!options.handle_modified_clicks && is_modified_click) return;
     if (a.hasAttribute("download")) return;
 
     event.preventDefault();

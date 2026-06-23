@@ -1,6 +1,15 @@
-import { Ok, Error } from "./gleam.mjs";
-import { Some, None } from "../gleam_stdlib/gleam/option.mjs";
-import { Uri, to_string } from "../gleam_stdlib/gleam/uri.mjs";
+import { Result$Ok, Result$Error } from "./gleam.mjs";
+import {
+  Option$Some,
+  Option$None,
+  Option$isSome,
+  Option$Some$0,
+} from "../gleam_stdlib/gleam/option.mjs";
+import {
+  Uri$Uri,
+  Uri$Uri$fragment,
+  to_string,
+} from "../gleam_stdlib/gleam/uri.mjs";
 
 // CONSTANTS -------------------------------------------------------------------
 
@@ -15,9 +24,9 @@ const initial_location = globalThis?.window?.location?.href;
 
 export const do_initial_uri = () => {
   if (!initial_location) {
-    return new Error(undefined);
+    return Result$Error(undefined);
   } else {
-    return new Ok(uri_from_url(new URL(initial_location)));
+    return Result$Ok(uri_from_url(new URL(initial_location)));
   }
 };
 
@@ -88,8 +97,9 @@ export const do_init = (dispatch, options = defaults) => {
 export const do_push = (uri) => {
   window.history.pushState({}, "", to_string(uri));
   window.requestAnimationFrame(() => {
-    if (uri.fragment[0]) {
-      document.getElementById(uri.fragment[0])?.scrollIntoView();
+    const fragment = Uri$Uri$fragment(uri);
+    if (Option$isSome(fragment)) {
+      document.getElementById(Option$Some$0(fragment))?.scrollIntoView();
     }
   });
 
@@ -99,8 +109,9 @@ export const do_push = (uri) => {
 export const do_replace = (uri) => {
   window.history.replaceState({}, "", to_string(uri));
   window.requestAnimationFrame(() => {
-    if (uri.fragment[0]) {
-      document.getElementById(uri.fragment[0])?.scrollIntoView();
+    const fragment = Uri$Uri$fragment(uri);
+    if (Option$isSome(fragment)) {
+      document.getElementById(Option$Some$0(fragment))?.scrollIntoView();
     }
   });
 
@@ -148,15 +159,17 @@ const find_anchor = (el) => {
 };
 
 const uri_from_url = (url) => {
-  return new Uri(
+  return Uri$Uri(
     /* scheme   */ url.protocol
-      ? new Some(url.protocol.slice(0, -1))
-      : new None(),
-    /* userinfo */ new None(),
-    /* host     */ url.hostname ? new Some(url.hostname) : new None(),
-    /* port     */ url.port ? new Some(Number(url.port)) : new None(),
+      ? Option$Some(url.protocol.slice(0, -1))
+      : Option$None(),
+    /* userinfo */ Option$None(),
+    /* host     */ url.hostname ? Option$Some(url.hostname) : Option$None(),
+    /* port     */ url.port ? Option$Some(Number(url.port)) : Option$None(),
     /* path     */ url.pathname,
-    /* query    */ url.search ? new Some(url.search.slice(1)) : new None(),
-    /* fragment */ url.hash ? new Some(url.hash.slice(1)) : new None(),
+    /* query    */ url.search
+      ? Option$Some(url.search.slice(1))
+      : Option$None(),
+    /* fragment */ url.hash ? Option$Some(url.hash.slice(1)) : Option$None(),
   );
 };

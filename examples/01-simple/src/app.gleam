@@ -8,7 +8,10 @@ import lustre/element/html
 import modem
 
 pub fn main() {
-  lustre.application(init, update, view)
+  let app = lustre.application(init, update, view)
+  let assert Ok(_) = lustre.start(app, "#app", Nil)
+
+  Nil
 }
 
 pub type Route {

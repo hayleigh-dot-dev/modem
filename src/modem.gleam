@@ -53,6 +53,12 @@ pub type Options {
     /// the external link!
     ///
     handle_external_links: Bool,
+    /// This option controls if modified browser clicks such as cmd-click,
+    /// ctrl-click, shift-click, or alt-click should trigger your url change
+    /// handler. When disabled, modem ignores these clicks and preserves the
+    /// browser's default behaviour.
+    ///
+    handle_modified_clicks: Bool,
   )
 }
 

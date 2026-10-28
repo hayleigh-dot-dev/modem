@@ -25,15 +25,16 @@ import lustre/vdom/vnode.{Element}
 
 // CONSTANTS -------------------------------------------------------------------
 
-const relative: Uri = Uri(
-  scheme: None,
-  userinfo: None,
-  host: None,
-  port: None,
-  path: "",
-  query: None,
-  fragment: None,
-)
+const relative: Uri =
+  Uri(
+    scheme: None,
+    userinfo: None,
+    host: None,
+    port: None,
+    path: "",
+    query: None,
+    fragment: None,
+  )
 
 // TYPES -----------------------------------------------------------------------
 
@@ -136,9 +137,9 @@ fn do_advanced(_handler: fn(Uri) -> Nil, _options: Options) -> Nil {
 /// > equivalent to `effect.none()`
 ///
 pub fn push(
-  path: String,
-  query: Option(String),
-  fragment: Option(String),
+  path path: String,
+  query query: Option(String),
+  fragment fragment: Option(String),
 ) -> Effect(msg) {
   use _ <- effect.from
   use <- bool.guard(!lustre.is_browser(), Nil)
@@ -166,9 +167,9 @@ fn do_push(_uri: Uri) -> Nil {
 /// > equivalent to `effect.none()`
 ///
 pub fn replace(
-  path: String,
-  query: Option(String),
-  fragment: Option(String),
+  path path: String,
+  query query: Option(String),
+  fragment fragment: Option(String),
 ) -> Effect(msg) {
   use _ <- effect.from
   use <- bool.guard(!lustre.is_browser(), Nil)
